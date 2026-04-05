@@ -8,7 +8,7 @@ hosts:
     rate_limit_burst: 20
     rate_limit_ttl_minutes: 5
     health_check_path: /health
-    health_check_interval: 100000000
+    health_check_interval: 5000
     health_check_timeout: 5000
     health_check_custom_headers:
       X-Custom-Header: CustomValue
