@@ -1,0 +1,23 @@
+services:
+  groxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - groxy_network
+
+  bun_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.Bun
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./example-server:/app
+    networks:
+      - groxy_network
+networks:
+  groxy_network:
+

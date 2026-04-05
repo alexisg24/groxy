@@ -1,0 +1,19 @@
+# Use the official Bun image
+FROM oven/bun:1 AS base
+WORKDIR /usr/src/app
+
+# Install dependencies into a temp directory to cache them
+FROM base AS install
+RUN mkdir -p /temp/dev
+# Copy package.json only; do a normal install so build doesn't fail if bun.lockb is not present
+COPY ./example-server/package.json /temp/dev/
+RUN cd /temp/dev && bun install
+
+# Copy dependencies and source code into final image
+FROM base AS release
+COPY --from=install /temp/dev/node_modules node_modules
+COPY ./example-server .
+
+# Expose the port and run the app
+EXPOSE 3000
+ENTRYPOINT [ "bun", "run", "index.ts" ]
