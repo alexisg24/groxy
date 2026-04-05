@@ -3,6 +3,7 @@ package http_handler
 import (
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	fileloader "github.com/alexisg24/groxy/core/file-loader"
@@ -21,9 +22,20 @@ func HandleProxyRequest(handlerOpts HttpHandler) {
 	}
 	proxyRequest, err := http.NewRequest(handlerOpts.Http.Method, handlerOpts.Host, handlerOpts.Http.Body)
 
-	// Set headers from the original request to the proxy request
+	// Copy headers from the original request to the proxy request, but handle cookies explicitly in other code block
+	proxyRequest.Header = make(http.Header)
 	for header, values := range handlerOpts.Http.Header {
-		proxyRequest.Header[header] = values
+		if strings.EqualFold(header, "Cookie") || strings.EqualFold(header, "Host") {
+			continue
+		}
+		for _, v := range values {
+			proxyRequest.Header.Add(header, v)
+		}
+	}
+
+	// Forward cookies from the original request using AddCookie to avoid header formatting issues
+	for _, c := range handlerOpts.Http.Cookies() {
+		proxyRequest.AddCookie(c)
 	}
 
 	// If there are custom request headers in the config, set them on the proxy request
@@ -45,7 +57,9 @@ func HandleProxyRequest(handlerOpts HttpHandler) {
 
 	// Copy the response headers to the original response
 	for header, values := range response.Header {
-		handlerOpts.Res.Header()[header] = values
+		for _, v := range values {
+			handlerOpts.Res.Header().Add(header, v)
+		}
 	}
 
 	// Set the status code and write the response body
