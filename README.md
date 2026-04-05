@@ -1,5 +1,5 @@
 ## Groxy
-Little proxy manager builded in go
+Little reverse proxy builded in go
 
 ### Features
 - Simple goroutine http server 
