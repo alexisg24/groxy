@@ -1,0 +1,21 @@
+port: 80
+hosts:
+  - name: backend_url
+    path: http://localhost:3000
+    timeout: 5000
+    retry_count: 3
+    rate_limit_max_requests_per_second: 10
+    rate_limit_burst: 20
+    rate_limit_ttl_minutes: 5
+    health_check_path: /health
+    health_check_interval: 10000
+    health_check_timeout: 5000
+    health_check_custom_headers:
+      X-Custom-Header: CustomValue
+    health_check_expected_status: 200
+    internal_headers:
+      - X-Forwarded-For
+      - X-Real-IP
+    custom_request_headers:
+      X-Request-ID: 12345
+    payload_size_limit: 1048576
